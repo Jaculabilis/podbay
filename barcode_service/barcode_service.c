@@ -1,6 +1,6 @@
 #include <argp.h>
 #include <linux/input.h>
-#include <linux/input-event-codes.h>
+//#include <linux/input-event-codes.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
