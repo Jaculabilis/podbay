@@ -1,0 +1,12 @@
+[Unit]
+Description=Podbay barcode service
+After=network.target, tinc.target
+Wants=network.target
+
+[Service]
+Type=simple
+RemainAfterExit=yes
+ExecStart=/usr/local/bin/barcode_service -d "usb-Wasp_k2_Wasp_Bar_Code_USBi-event-kbd" -e "tcp://127.0.0.1:5000"
+
+[Install]
+WantedBy=multi-user.target
