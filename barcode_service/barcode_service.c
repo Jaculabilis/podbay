@@ -48,6 +48,11 @@ main(int argc, char **argv)
   while (true)
   {
     barcode = await_next_barcode(input_fd);
+    if (barcode[0] == '\x00')
+    {
+      /* Newline is pressed twice. Ignore any 'empty' barcodes. */
+      continue;
+    }
     if (zsock_send(zsock, "s", barcode) < 0)
     {
       fprintf(stderr, "Sending barcode failed!\n");
