@@ -69,7 +69,7 @@ await_next_barcode(int fd)
   ll_string *ll_barcode = NULL;
   while ((c = decode_next_event(fd)) != '\n')
   {
-    ll_string_append(ll_barcode, c);
+    ll_barcode = ll_string_append(ll_barcode, c);
   }
   barcode = ll_string_to_c_string(ll_barcode);
   ll_string_free(ll_barcode);
