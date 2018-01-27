@@ -52,6 +52,7 @@ main(int argc, char **argv)
     if (barcode[0] == '\x00')
     {
       /* Newline is pressed twice. Ignore any 'empty' barcodes. */
+      fprintf(stderr, "Encountered empty barcode.\n");
       continue;
     }
     if (zsock_send(zsock, "s", barcode) < 0)
@@ -107,8 +108,9 @@ decode_next_event(int fd)
 
     /*
      * If we received a keypress event, decode the keycode responsible.
+     * An event value of 1 is a keypress.
      */
-    if (event.type == EV_KEY) {
+    if (event.type == EV_KEY && event.value == 1) {
       switch (event.code) {
 #define DECODE_KEY(key_name, decode_char) case (KEY_##key_name): return decode_char
         DECODE_KEY(ENTER, '\n');
@@ -240,7 +242,7 @@ ll_string_to_c_string(ll_string *l)
   // Copy the rest of the linked list into the C-string.
   for (int i = size; i > 0; i--)
   {
-    c_string[i] = rest->character;
+    c_string[i - 1] = rest->character;
     rest = rest->next;
   }
 
