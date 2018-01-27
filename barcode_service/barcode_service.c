@@ -45,6 +45,7 @@ main(int argc, char **argv)
   }
 
   /* Acquire and send barcodes through the ZMQ socket. */
+  printf("Ready, awaiting barcodes.\n");
   while (true)
   {
     barcode = await_next_barcode(input_fd);
