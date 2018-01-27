@@ -102,13 +102,14 @@ decode_next_event(int fd)
     ssize_t n_read = read(fd, &event, sizeof(struct input_event));
     if (n_read != sizeof(struct input_event)) {
       fprintf(stderr, "Read interrupted!\n");
-      exit(1);
+      continue;
     }
 
     /*
      * If we received a keypress event, decode the keycode responsible.
+     * (Event value 1 = key depressed)
      */
-    if (event.type == EV_KEY) {
+    if (event.type == EV_KEY && event.value == 1) {
       switch (event.code) {
 #define DECODE_KEY(key_name, decode_char) case (KEY_##key_name): return decode_char
         DECODE_KEY(ENTER, '\n');
