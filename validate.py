@@ -4,8 +4,16 @@ import sys
 from datetime import datetime
 import time
 import RPi.GPIO as IO
+import zmq
 
+# Magic numbers for PWM activation
 MOTOR_PIN = 19
+FREQUENCY = 100
+DUTYCYCLE = 100
+DURATION = 1.0
+# Address of the scanning service
+SCANSERVADDRESS = "tcp://localhost:5000"
+
 
 def timestamped(s):
 	"""
@@ -21,42 +29,53 @@ def setup_pwm():
 	IO.setwarnings(False)
 	IO.setmode(IO.BCM)
 	IO.setup(MOTOR_PIN, IO.OUT)
-	p = IO.PWM(MOTOR_PIN, 100) # Second argument is frequency, I think
+	p = IO.PWM(MOTOR_PIN, FREQUENCY)
 	return p
 
 def unlock_door(p):
 	"""
 	Uses PWM to turn the motor connected to the door handle.
 	"""
-	p.start(50)
-	time.sleep(1.0)
-	p.stop()
+	try:
+		p.start(DUTYCYCLE)
+		xtime.sleep(DURATION)
+	finally:
+		p.stop()
 
 def read_loop():
 	"""
 	Simple REPL skeleton for validating scanned IDs.
 	"""
+	# Initialize zmq socket for reading in scanned barcodes
+	context = zmq.Context()
+	socket = context.socket(zmq.SUB)
+	socket.setsockopt(zmq.SUBSCRIBE, "")
+	socket.connect(SCANSERVADDRESS)
+	# TODO: Open the access database
+	
+	# Initialize the PWM pin for opening the door
+	pwm_pin = setup_pwm()
 	# Open the log file in append mode
 	log_file = open("./access.log", "a")
 	log_file.write(timestamped("=== Door security initiated ===\n"))
-	# Initialize the PWM pin
-	pwm_pin = setup_pwm()
 
 	# Begin the loop
 	while True:
-		# TODO: Read in the ID
-		
+		# Read in the ID
+		scanned_id = socket.recv()
 		# TODO: Check if the ID is authorized
-		authorized = False
+		authorized = True
+		
 
 		# If the user is not authorized, deny access
-		if input not in authorized:
+		if not authorized:
 			s = timestamped("##### denied\n")
 			log_file.write(s)
 		# If the user is authorized, perform the unlock procedure
 		else:
-			s = timestamped("##### <Username> validated")
+			s = timestamped("##### <Username> validated\n")
 			log_file.write(s)
+			print s,
 			# TODO: Play open tone
 			# TODO: Run unlock procedure
 			unlock_door(pwm_pin)
