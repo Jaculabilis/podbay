@@ -78,6 +78,6 @@ static const struct argp argp = {
   .options  = options,
   .parser   = parse_opt,
   .args_doc = NULL,
-  .doc      = "Acquire barcode data and publish to a ZeroMQ channel\v",
+  .doc      = "Acquire barcode data and publish to a ZeroMQ channel\n",
   .children = NULL
 };
