@@ -1,6 +1,6 @@
 [Unit]
 Description=Podbay barcode service
-After=network.target tinc.target
+After=network.target
 Wants=network.target
 
 [Service]
