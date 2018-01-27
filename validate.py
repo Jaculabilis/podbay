@@ -67,22 +67,22 @@ def read_loop():
 	# Begin the loop
 	while True:
 		# Read in the ID
-		scanned_id = socket.recv()
+		code = socket.recv()
 		# Determine ID authorization
-		authorized = id in access and "authorized" in access[id] and access[id]["authorized"]
-		user = access[id]["user"] if id in access and "user" in access[id] else "unknown id"
+		authorized = code in access and "authorized" in access[code] and access[code]["authorized"]
+		user = access[code]["user"] if code in access and "user" in access[code] else "unknown barcode"
 		# If the user is not authorized, deny access
 		if not authorized:
-			s = timestamped("Denied {} ({})\n".format(id, user))
+			s = timestamped("Denied {} ({})\n".format(code, user))
 			log_file.write(s)
 			print s,
 		# If the user is authorized, perform the unlock procedure
 		else:
-			s = timestamped("Validated {} {}\n".format(id, user))
+			s = timestamped("Validated {} {}\n".format(code, user))
 			log_file.write(s)
 			print s,
 			# TODO: Play open tone
-			if "sound" in access[id]:
+			if "sound" in access[code]:
 				pass
 			# Run unlock procedure
 			unlock_door(pwm_pin)
