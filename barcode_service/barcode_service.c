@@ -107,9 +107,8 @@ decode_next_event(int fd)
 
     /*
      * If we received a keypress event, decode the keycode responsible.
-     * (Event value 1 = key depressed)
      */
-    if (event.type == EV_KEY && event.value == 1) {
+    if (event.type == EV_KEY) {
       switch (event.code) {
 #define DECODE_KEY(key_name, decode_char) case (KEY_##key_name): return decode_char
         DECODE_KEY(ENTER, '\n');
