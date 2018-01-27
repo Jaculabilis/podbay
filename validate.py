@@ -39,7 +39,7 @@ def unlock_door(p):
 	"""
 	try:
 		p.start(DUTYCYCLE)
-		xtime.sleep(DURATION)
+		time.sleep(DURATION)
 	finally:
 		p.stop()
 
@@ -69,8 +69,12 @@ def read_loop():
 		# Read in the ID
 		code = socket.recv()
 		# Determine ID authorization
-		authorized = code in access and "authorized" in access[code] and access[code]["authorized"]
-		user = access[code]["user"] if code in access and "user" in access[code] else "unknown barcode"
+		if code not in access:
+			authorized = False
+			user = "unknown barcode"
+		else:
+			authorized = "authorized" in access[code] and access[code]["authorized"]
+			user = access[code]["user"] if "user" in access[code] else code
 		# If the user is not authorized, deny access
 		if not authorized:
 			s = timestamped("Denied {} ({})\n".format(code, user))
