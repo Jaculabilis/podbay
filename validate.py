@@ -52,12 +52,6 @@ def read_loop():
 	socket = context.socket(zmq.SUB)
 	socket.setsockopt(zmq.SUBSCRIBE, "")
 	socket.connect(SCANSERVADDRESS)
-	# Open the access database
-	access_raw = open("access.json").read()
-	try:
-		access = json.loads(access_raw)
-	except:
-		raise SystemExit("Could not load access file!")
 	# Initialize the PWM pin for opening the door
 	pwm_pin = setup_pwm()
 	# Open the log file in append mode
@@ -68,6 +62,18 @@ def read_loop():
 	while True:
 		# Read in the ID
 		code = socket.recv()
+
+		# Load the access database
+		# As long as the access list is small and the speed is unimportant,
+		# the flexibility and update ability is worth reading from disk.
+		raw = open("access.json", "r").read()
+		try:
+			access = json.loads(raw)
+		except:
+			log_file.write(timestamped("Could not load access file!"))
+			sys.stderr.write("Could not load access file!")
+			access = {}
+
 		# Determine ID authorization
 		if code not in access:
 			authorized = False
@@ -75,11 +81,13 @@ def read_loop():
 		else:
 			authorized = "authorized" in access[code] and access[code]["authorized"]
 			user = access[code]["name"] if "name" in access[code] else code
+
 		# If the user is not authorized, deny access
 		if not authorized:
 			s = timestamped("Denied {} ({})\n".format(code, user))
 			log_file.write(s)
 			print s,
+		
 		# If the user is authorized, perform the unlock procedure
 		else:
 			s = timestamped("Validated {} ({})\n".format(code, user))
