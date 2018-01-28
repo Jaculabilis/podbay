@@ -1,0 +1,12 @@
+[Unit]
+Description=Podbay validation service
+After=network.target
+Wants=network.target
+
+[Service]
+Type=simple
+RemainAfterExit=yes
+ExecStart=/usr/local/bin/open_the_pod_bay_doors
+
+[Install]
+WantedBy=multi-user.target
