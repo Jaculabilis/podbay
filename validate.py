@@ -74,7 +74,7 @@ def read_loop():
 			user = "unknown barcode"
 		else:
 			authorized = "authorized" in access[code] and access[code]["authorized"]
-			user = access[code]["user"] if "user" in access[code] else code
+			user = access[code]["name"] if "name" in access[code] else code
 		# If the user is not authorized, deny access
 		if not authorized:
 			s = timestamped("Denied {} ({})\n".format(code, user))
@@ -82,7 +82,7 @@ def read_loop():
 			print s,
 		# If the user is authorized, perform the unlock procedure
 		else:
-			s = timestamped("Validated {} {}\n".format(code, user))
+			s = timestamped("Validated {} ({})\n".format(code, user))
 			log_file.write(s)
 			print s,
 			# TODO: Play open tone
